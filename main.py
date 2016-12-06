@@ -3,10 +3,16 @@ The main program for CSC384 project
 '''
 
 WELCOME_MESSAGE = "Thanks for using IMeal"
-ASK_CALORIE = "Enter how much calories do you want to have: "
-ASK_NUTATION_PER_MEAL = "Enter how much nutrition do you want to have per meal: "
-BUDGET = "Enter a budget limitation: "
-SPECIAL_CONSIDERATION = "Select a special request: "
+ASK_MEAL_NUM = "Enter number of meals you want to generated: "
+ASK_PROTEIN = "Enter how much protein do you want to have: "
+ASK_SUGAR = "Enter how much sugar do you want to have: "
+ASK_CALCIUM = "Enter how much calcium do you want to have: "
+ASK_BUDGET = "Enter a budget limitation: "
+ASK_SPECIAL_REQUEST = "You can select some special request: "
+SPECIAL_REQUESTS = ["1.I am special request 1",
+                    "2.I am special request 2",
+                    "3.I am special request 3"]
+
 def main():
     """
     The main function
@@ -24,13 +30,43 @@ def main():
     print(WELCOME_MESSAGE)
     while True:
         try:
-            calories = int(input(ASK_CALORIE))
+            meals = int(input(ASK_MEAL_NUM))
+            protein = int(input(ASK_PROTEIN))
+            sugar = int(input(ASK_SUGAR))
+            calcium = int(input(ASK_CALCIUM))
+            budget = int(input(ASK_BUDGET))
         except ValueError:
             print("Sorry please enter a number or None")
+        print(ASK_SPECIAL_REQUEST)
+        for request in SPECIAL_REQUESTS:
+            print(request)
+        while True:
+            r_input = input()
+            requests = r_input.split()
+            passed = 0
+            requests = list(map(int, requests))
+            for r in requests:
+                if not isinstance(r, int):
+                    print("Please enter the number you want")
+                    passed = 1
+            if passed == 0:
+                break
+        break
+    start(meals, protein, sugar, calcium, budget, requests)
 
+def start(num_meal, protein, sugar, calcium, budget, special_requests):
+    '''
+    Start the progress to make the meals for user
+    :param num_meal: Number of meals
+    :param protein: Amount of protein
+    :param sugar: Amount of sugar
+    :param calcium: Amount of calcium
+    :param budget: budget
+    :param special_requests: Some special requests that the user may have
+    :return: The meals that the CSP generated
+    '''
 
     pass
-
 
 if __name__ == '__main__':
     main()
