@@ -39,14 +39,5 @@ def csv_to_dict(in_file):
             nutr_dict["price"] = float(row[22]) if row[22].strip() != "" else 0.0
             food_dict[food] = nutr_dict
 
-    # counter = 1
-    # for key, value in food_dict.items():
-    #     if counter <= 20:
-    #         print(key, value)
-    #         counter += 1
-    #     else:
-    #         break
     return food_dict
 
-# if __name__ == "__main__":
-#     csv_to_dict("food_nutrition_v2.csv")
