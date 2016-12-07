@@ -1,6 +1,7 @@
 '''
 The main program for CSC384 project
 '''
+from cspModel import IMeal_Model
 
 WELCOME_MESSAGE = "Thanks for using IMeal"
 ASK_MEAL_NUM = "Enter number of meals you want to generated: "
@@ -66,6 +67,16 @@ def start(num_meal, protein, sugar, calcium, budget, special_requests):
     :return: The meals that the CSP generated
     '''
 
+    user_input_data = {
+        'num_meals': num_meal,
+        'protein': protein,
+        'sugar': sugar,
+        'calcium:': calcium,
+        'budget': budget,
+        'special_requests': special_requests
+    }
+
+    csp_modle = IMeal_Model(user_input_data)
     pass
 
 if __name__ == '__main__':

@@ -11,5 +11,6 @@ class IMealTests(unittest.TestCase):
         self.assertEqual('foo'.upper(), 'FOO')
 
 
+
 if __name__ == '__main__':
     unittest.main()
