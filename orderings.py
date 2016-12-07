@@ -3,6 +3,7 @@
 
 import random
 import collections
+from collections import defaultdict
 '''
 This file will contain different variable ordering heuristics to be used within
 bt_search.
@@ -28,6 +29,14 @@ val_ordering == a function with the following template
 
 '''
 
+
+class Dictlist(dict):
+    def __setitem__(self, key, value):
+        try:
+            self[key]
+        except KeyError:
+            super(Dictlist, self).__setitem__(key, [])
+        self[key].append(value)
 
 def ord_random(csp):
     '''
@@ -149,22 +158,23 @@ def val_lcv(csp, var):
     result_dic = lcv_helper(csp, var)
     return sorted(result_dic, key=result_dic.get)
 
-def val_odering_max_protein(csp, var):
+def val_odering_max(csp, var):
 
     current_domain = var.cur_domain()
-    dic = {}
+    dic = defaultdict(list)
     for v in current_domain:
         total_protein = 0
         for food in v:
             total_protein += food.get_amount('protein')
 
-        dic[total_protein] = v
+        dic[total_protein].append(v)
 
     ret = []
     od = collections.OrderedDict(sorted(dic.items(), reverse=True))
 
     for k, value in od.items():
-        ret.append(value)
+        for v in value:
+            ret.append(v)
     return ret
 
 

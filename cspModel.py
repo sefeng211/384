@@ -1,5 +1,6 @@
 from cspbase import *
 from cspbaseMeal import *
+from orderings import *
 import itertools
 import collections
 from itertools import chain, combinations
@@ -59,17 +60,24 @@ def IMeal_Model(user_input_dic, food_data):
         csp.add_constraint(c)
 
     # Sugar Constraint
-    # day_counter = 1
-    # for meal_in_day in meals_in_days:
-    #     c = Constraint("Sugar_Day_{}".format(day_counter),
-    #                    meal_in_day)
-    #     day_counter += 1
-    #     all_possible_tuples = find_possible_tuples(SUGAR, sugar, meal_in_day)
-    #     c.add_satisfying_tuples(all_possible_tuples)
-    #     csp.add_constraint(c)
+    day_counter = 1
+    for meal_in_day in meals_in_days:
+        c = Constraint("Sugar_Day_{}".format(day_counter),
+                       meal_in_day)
+        day_counter += 1
+        all_possible_tuples = find_possible_tuples(SUGAR, sugar, meal_in_day)
+        c.add_satisfying_tuples(all_possible_tuples)
+        csp.add_constraint(c)
 
     # Calcium Constraint
-
+    day_counter = 1
+    for meal_in_day in meals_in_days:
+        c = Constraint("Calcium_Day_{}".format(day_counter),
+                       meal_in_day)
+        day_counter += 1
+        all_possible_tuples = find_possible_tuples(CALCIUM, calcium, meal_in_day)
+        c.add_satisfying_tuples(all_possible_tuples)
+        csp.add_constraint(c)
 
     # Budget Constraint
 
@@ -139,23 +147,25 @@ def split_meals_into_days(meals):
 def find_possible_tuples(type, amount, day_meals, order=True):
     '''
     Find the possible tuple for protein
-    :return:
+    :return: All possible tuples
     '''
 
     varDoms = []
     for v in day_meals:
         varDoms.append(v.domain())
 
-    sat_tuples = {}
+    sat_tuples = defaultdict(list)
     # Find all possible sequence
     for l in itertools.product(*varDoms):
         total_amount = 0
+
         for foods in l:
             for food in foods:
                 total_amount += food.get_amount(type)
 
         if total_amount <= amount:
-            sat_tuples[total_amount]= l
+            sat_tuples[total_amount].append(l)
+
     ret = []
     if order:
         od = collections.OrderedDict(sorted(sat_tuples.items(), reverse=True))
@@ -163,5 +173,7 @@ def find_possible_tuples(type, amount, day_meals, order=True):
         od = sat_tuples
 
     for k, value in od.items():
-        ret.append(value)
+        for v in value:
+            ret.append(v)
+
     return ret

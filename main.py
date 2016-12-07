@@ -5,6 +5,7 @@ from cspModel import *
 from cspbase import *
 from propagators import *
 from orderings import *
+import collections
 WELCOME_MESSAGE = "Thanks for using IMeal"
 ASK_MEAL_NUM = "Enter number of days you want to generated: "
 ASK_PROTEIN = "Enter how much protein do you want to have per day: "
@@ -15,6 +16,7 @@ ASK_SPECIAL_REQUEST = "You can select some special request: "
 SPECIAL_REQUESTS = ["1.Reduce repeated meals",
                     "2.Eat as much as I can",
                     "3.I am special request 3"]
+EAT_AS_MUCH_AS_I_CAN = 2
 
 MOCK_FOOD_DATA = {
         'cheese':
@@ -54,11 +56,12 @@ MOCK_FOOD_DATA = {
                 'budget': 4
             }
     }
+
 def main():
     """
     The main function
     """
-    # TODO: This function should print the necessary information to the shell
+    # This function should print the necessary information to the shell
     # and collect information from the user, then invoke functions to output a
     # meal to the user
     # We need to ask:
@@ -95,6 +98,7 @@ def main():
         break
     start(days, protein, sugar, calcium, budget, requests)
 
+
 def start(num_days, protein, sugar, calcium, budget, special_requests):
     '''
     Start the progress to make the meals for user
@@ -116,13 +120,13 @@ def start(num_days, protein, sugar, calcium, budget, special_requests):
         'special_requests': special_requests
     }
     ordering_function = val_arbitrary
-    if 2 in special_requests:
-        EAT_AS_MUSH_AS_I_CAN = True
-        ordering_function = val_odering_max_protein
+    if EAT_AS_MUCH_AS_I_CAN in special_requests:
+        ordering_function = val_odering_max
 
+    orderd_data = collections.OrderedDict(MOCK_FOOD_DATA)
 
     # food_data = create_food_data()
-    csp_modle, var_array = IMeal_Model(user_input_data, MOCK_FOOD_DATA)
+    csp_modle, var_array = IMeal_Model(user_input_data, orderd_data)
     solver = BT(csp_modle)
     solver.bt_search(prop_BT, ord_mrv,
                      ordering_function)
@@ -142,7 +146,20 @@ def print_result(var_array):
                 print(food.get_name())
 
             meal_counter += 1
+        calculate_nutrition(meals, PROTEIN)
+        calculate_nutrition(meals, SUGAR)
+        calculate_nutrition(meals, CALCIUM)
         day_counter += 1
+
+
+def calculate_nutrition(var_array, type):
+
+    sum = 0
+    for meal in var_array:
+        for food in meal.get_assigned_value():
+            sum += food.get_amount(type)
+    print("Total amount of {} is {}".format(type, sum))
+
 
 if __name__ == '__main__':
     # main()
