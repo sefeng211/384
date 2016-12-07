@@ -149,6 +149,25 @@ def val_lcv(csp, var):
     result_dic = lcv_helper(csp, var)
     return sorted(result_dic, key=result_dic.get)
 
+def val_odering_max_protein(csp, var):
+
+    current_domain = var.cur_domain()
+    dic = {}
+    for v in current_domain:
+        total_protein = 0
+        for food in v:
+            total_protein += food.get_amount('protein')
+
+        dic[total_protein] = v
+
+    ret = []
+    od = collections.OrderedDict(sorted(dic.items(), reverse=True))
+
+    for k, value in od.items():
+        ret.append(value)
+    return ret
+
+
 def lcv_helper(csp, var):
     """
     A helper function of val_lcv that takes a CSP Object and a variable, and
