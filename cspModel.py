@@ -150,7 +150,12 @@ def create_domain(food_data):
 
 
 def split_meals_into_days(meals):
-
+    '''
+    Split the meals from a list into a list of lists where each sublist
+    represents a day
+    :param meals: a list meal variables
+    :return: a list of lists meal variables
+    '''
     ret = []
     counter = 1
 

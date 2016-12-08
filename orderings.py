@@ -163,8 +163,20 @@ def val_lcv(csp, var):
     return sorted(result_dic, key=result_dic.get)
 
 def val_odering_max(csp, var):
+    '''
+    val_lcv(csp,var):
+    A val_ordering function that takes CSP object csp and Variable object var,
+    and returns a list of Values [val1,val2,val3,...]
+    from var's current domain, ordered from best to worst, evaluated according to the
+    Least Constraining Value (LCV) heuristic.
+    (In other words, the list will go from least constraining value in the 0th index,
+    to most constraining value in the $j-1$th index, if the variable has $j$ current domain values.)
+    The best value, according to LCV, is the one that rules out the fewest domain values in other
+    variables that share at least one constraint with var.
+    '''
 
     current_domain = var.cur_domain()
+    # Using defaultdict to allow us having store duplicate keys in a dictionary
     dic = defaultdict(list)
     for v in current_domain:
         total_protein = 0
@@ -187,6 +199,8 @@ def val_odering_max(csp, var):
     od = collections.OrderedDict(sorted(dic.items(), reverse=True))
     l = list(od.items())
 
+    # If the user wants to reduce repeated meal, we move some meals from the
+    # top of the queue to the bottom of the queue
     if csp.is_reduce_repeat():
         counter = csp.get_reduce_repeat_counter()
         l = l[counter:] + l[:counter]
