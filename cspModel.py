@@ -22,23 +22,25 @@ NUM_MEALS_PER_DAY = 3
 PROTEIN = 'protein'
 SUGAR = 'sugar'
 CALCIUM = 'calcium'
+ENERGY = 'energy'
 BUDGET = 'price'
-MEALS = 'meals'
+DAYS = 'days'
+SPECIAL_REQUESTS = 'special_requests'
 
-
-def IMeal_Model(user_input_dic, food_data):
+def IMeal_Model(user_input_dic, food_data, reduce_repeat = True):
     '''
     Construct and return CSP model for IMeal.
     :param user_input_dic: A dictionary that contains all user input information
     :return: return a CSP Model for IMeal
     '''
 
-    csp = MealCSP('IMeal_model', [])
-    num_meals = user_input_dic[MEALS]
+    csp = MealCSP('IMeal_model', reduce_repeat, [])
+    num_meals = user_input_dic[DAYS] * NUM_MEALS_PER_DAY
     protein = user_input_dic[PROTEIN]
     sugar = user_input_dic[SUGAR]
     calcium = user_input_dic[CALCIUM]
     budget = user_input_dic[BUDGET]
+    energy = user_input_dic[ENERGY]
 
     # Each meal plan will be a variable
     for i in range(0, num_meals):
@@ -49,34 +51,60 @@ def IMeal_Model(user_input_dic, food_data):
         csp.add_var(var)
 
     # Protein Constraint
-    meals_in_total = csp.get_all_vars()
-
-    c = Constraint("Protein_Cons",
-                   meals_in_total)
-    all_possible_tuples = find_possible_tuples(PROTEIN, protein, meals_in_total)
-    c.add_satisfying_tuples(all_possible_tuples)
-    csp.add_constraint(c)
+    meals_in_days = split_meals_into_days(csp.get_all_vars())
+    if protein is not None:
+        day_counter = 1
+        for meal_in_day in meals_in_days:
+            c = Constraint("Protein_Day_{}".format(day_counter),
+                           meal_in_day)
+            day_counter += 1
+            all_possible_tuples = find_possible_tuples(PROTEIN, protein, meal_in_day)
+            c.add_satisfying_tuples(all_possible_tuples)
+            csp.add_constraint(c)
 
     # Sugar Constraint
-    c = Constraint("Sugar_Cons",
-                   meals_in_total)
-    all_possible_tuples = find_possible_tuples(SUGAR, sugar, meals_in_total)
-    c.add_satisfying_tuples(all_possible_tuples)
-    csp.add_constraint(c)
+    if sugar is not None:
+        day_counter = 1
+        for meal_in_day in meals_in_days:
+            c = Constraint("Sugar_Day_{}".format(day_counter),
+                           meal_in_day)
+            day_counter += 1
+            all_possible_tuples = find_possible_tuples(SUGAR, sugar, meal_in_day)
+            c.add_satisfying_tuples(all_possible_tuples)
+            csp.add_constraint(c)
 
     # Calcium Constraint
-    c = Constraint("Calcium_Cons",
-                   meals_in_total)
-    all_possible_tuples = find_possible_tuples(CALCIUM, calcium, meals_in_total)
-    c.add_satisfying_tuples(all_possible_tuples)
-    csp.add_constraint(c)
+    if calcium is not None:
+        day_counter = 1
+        for meal_in_day in meals_in_days:
+            c = Constraint("Calcium_Day_{}".format(day_counter),
+                           meal_in_day)
+            day_counter += 1
+            all_possible_tuples = find_possible_tuples(CALCIUM, calcium, meal_in_day)
+            c.add_satisfying_tuples(all_possible_tuples)
+            csp.add_constraint(c)
+
+    # Energy Constraint
+    if energy is not None:
+        day_counter = 1
+        for meal_in_day in meals_in_days:
+            c = Constraint("Energy_Day_{}".format(day_counter),
+                           meal_in_day)
+            day_counter += 1
+            all_possible_tuples = find_possible_tuples(ENERGY, energy, meal_in_day)
+            c.add_satisfying_tuples(all_possible_tuples)
+            csp.add_constraint(c)
 
     # Budget Constraint
-    c = Constraint("Budget_Cons",
-                   meals_in_total)
-    all_possible_tuples = find_possible_tuples(BUDGET, budget, meals_in_total)
-    c.add_satisfying_tuples(all_possible_tuples)
-    csp.add_constraint(c)
+    if budget is not None:
+        day_counter = 1
+        for meal_in_day in meals_in_days:
+            c = Constraint("Budget_Day_{}".format(day_counter),
+                           meal_in_day)
+            day_counter += 1
+            all_possible_tuples = find_possible_tuples(BUDGET, budget, meal_in_day)
+            c.add_satisfying_tuples(all_possible_tuples)
+            csp.add_constraint(c)
 
     return csp, csp.get_all_vars()
 
@@ -152,8 +180,7 @@ def find_possible_tuples(type, amount, day_meals, order=True):
 
     sat_tuples = defaultdict(list)
     # Find all possible sequence
-    sequence = itertools.product(*varDoms)
-    for l in sequence:
+    for l in itertools.product(*varDoms):
         total_amount = 0
 
         for foods in l:

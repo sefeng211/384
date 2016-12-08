@@ -30,6 +30,10 @@ val_ordering == a function with the following template
 '''
 
 
+PROTEIN = 'protein'
+SUGAR = 'sugar'
+CALCIUM = 'calcium'
+ENERGY = 'energy'
 class Dictlist(dict):
     def __setitem__(self, key, value):
         try:
@@ -164,15 +168,31 @@ def val_odering_max(csp, var):
     dic = defaultdict(list)
     for v in current_domain:
         total_protein = 0
+        total_calcium = 0
+        total_sugar = 0
+        total_energy = 0
         for food in v:
-            total_protein += food.get_amount('protein')
+            total_protein += food.get_amount(PROTEIN)
+        for food in v:
+            total_calcium += food.get_amount(CALCIUM)
+        for food in v:
+            total_sugar += food.get_amount(SUGAR)
+        for food in v:
+            total_energy += food.get_amount(ENERGY)
 
-        dic[total_protein].append(v)
+        total_amount = total_protein + total_calcium + total_sugar + total_energy
+        dic[total_amount].append(v)
 
     ret = []
     od = collections.OrderedDict(sorted(dic.items(), reverse=True))
+    l = list(od.items())
 
-    for k, value in od.items():
+    if csp.is_reduce_repeat():
+        counter = csp.get_reduce_repeat_counter()
+        l = l[counter:] + l[:counter]
+        csp.increase_reduce_repeat_counter()
+
+    for k, value in l:
         for v in value:
             ret.append(v)
     return ret
