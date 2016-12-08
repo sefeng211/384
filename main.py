@@ -6,17 +6,24 @@ from cspbase import *
 from propagators import *
 from orderings import *
 import collections
+
+from process_db import *
+
 WELCOME_MESSAGE = "Thanks for using IMeal"
-ASK_MEAL_NUM = "Enter number of days you want to generated: "
-ASK_PROTEIN = "Enter how much protein do you want to have per day: "
-ASK_SUGAR = "Enter how much sugar do you want to have per day: "
-ASK_CALCIUM = "Enter how much calcium do you want to have per day: "
+ASK_MEAL_NUM = "Enter number of meals you want to generated: "
+ASK_ENERGY = "Enter how much energy/calories do " \
+            "you want to have in these meals: "
+ASK_PROTEIN = "Enter how much protein do you want to have in these meals: "
+ASK_SUGAR = "Enter how much sugar do you want to have in these meals: "
+ASK_CALCIUM = "Enter how much calcium do you want to have in these meals: "
 ASK_BUDGET = "Enter a budget limitation per day: "
 ASK_SPECIAL_REQUEST = "You can select some special request: "
 SPECIAL_REQUESTS = ["1.Reduce repeated meals",
                     "2.Eat as much as I can",
                     "3.I am special request 3"]
 EAT_AS_MUCH_AS_I_CAN = 2
+
+DATA_FILE = 'food_nutrition_small_v2.csv'
 
 MOCK_FOOD_DATA = {
         'cheese':
@@ -74,7 +81,8 @@ def main():
     print(WELCOME_MESSAGE)
     while True:
         try:
-            days = int(input(ASK_MEAL_NUM))
+            meals = int(input(ASK_MEAL_NUM))
+            energy = int(input(ASK_ENERGY))
             protein = int(input(ASK_PROTEIN))
             sugar = int(input(ASK_SUGAR))
             calcium = int(input(ASK_CALCIUM))
@@ -96,10 +104,10 @@ def main():
             if passed == 0:
                 break
         break
-    start(days, protein, sugar, calcium, budget, requests)
+    start(meals, protein, sugar, calcium, budget, requests)
 
 
-def start(num_days, protein, sugar, calcium, budget, special_requests):
+def start(num_meals, protein, sugar, calcium, budget, special_requests):
     '''
     Start the progress to make the meals for user
     :param num_meal: Number of meals
@@ -112,20 +120,19 @@ def start(num_days, protein, sugar, calcium, budget, special_requests):
     '''
 
     user_input_data = {
-        'days': num_days,
-        'protein': protein,
-        'sugar': sugar,
-        'calcium': calcium,
-        'budget': budget,
+        MEALS: num_meals,
+        PROTEIN: protein,
+        SUGAR: sugar,
+        CALCIUM: calcium,
+        BUDGET: budget,
         'special_requests': special_requests
     }
     ordering_function = val_arbitrary
     if EAT_AS_MUCH_AS_I_CAN in special_requests:
         ordering_function = val_odering_max
+    data = csv_to_dict(DATA_FILE)
+    orderd_data = collections.OrderedDict(data)
 
-    orderd_data = collections.OrderedDict(MOCK_FOOD_DATA)
-
-    # food_data = create_food_data()
     csp_modle, var_array = IMeal_Model(user_input_data, orderd_data)
     solver = BT(csp_modle)
     solver.bt_search(prop_BT, ord_mrv,
@@ -133,23 +140,20 @@ def start(num_days, protein, sugar, calcium, budget, special_requests):
 
     print_result(var_array)
 
+
 def print_result(var_array):
 
-    splited_into_days = split_meals_into_days(var_array)
-    day_counter = 1
-    for meals in splited_into_days:
-        print("==============Day {} =============".format(str(day_counter)))
-        meal_counter = 1
-        for meal in meals:
-            print("Meal {}".format(str(meal_counter)))
-            for food in meal.get_assigned_value():
-                print(food.get_name())
+    meal_counter = 1
+    for meals in var_array:
+        print("Meal {}".format(str(meal_counter)))
+        for food in meals.get_assigned_value():
+            print(food.get_name())
 
-            meal_counter += 1
-        calculate_nutrition(meals, PROTEIN)
-        calculate_nutrition(meals, SUGAR)
-        calculate_nutrition(meals, CALCIUM)
-        day_counter += 1
+        meal_counter += 1
+    calculate_nutrition(var_array, PROTEIN)
+    calculate_nutrition(var_array, SUGAR)
+    calculate_nutrition(var_array, CALCIUM)
+    calculate_nutrition(var_array, BUDGET)
 
 
 def calculate_nutrition(var_array, type):
@@ -163,4 +167,6 @@ def calculate_nutrition(var_array, type):
 
 if __name__ == '__main__':
     # main()
-    start(1, 10, 100, 10, 1000, [2])
+    start(4, 300, 300, 2000, 1000, [2])
+    data = csv_to_dict(DATA_FILE)
+    c = data
