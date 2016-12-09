@@ -5,6 +5,7 @@
 IMeal is a command line interface meal genearter. 
 
 The program will ask some questions to users, and use the answers to generate some meals that meet the user requirments. 
+SYSTEM REQUIREMENT： at least 4GB of memory
 
 # Setup Constraint
 After start the program, the user should answer the questions that pop up in the shell
