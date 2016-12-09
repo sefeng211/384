@@ -17,6 +17,12 @@ def powerset(iterable):
     s = list(iterable)
     return chain.from_iterable(combinations(s, r) for r in range(1, len(s)+1))
 
+
+def powersetForThree(iterable):
+    "powerset([1,2,3]) --> (1,2,3)"
+    s = list(iterable)
+    return chain.from_iterable([combinations(s, 3)])
+
 NUM_MEALS_PER_DAY = 3
 
 PROTEIN = 'protein'
@@ -27,7 +33,7 @@ BUDGET = 'price'
 DAYS = 'days'
 SPECIAL_REQUESTS = 'special_requests'
 
-def IMeal_Model(user_input_dic, food_data, reduce_repeat = True):
+def IMeal_Model(user_input_dic, food_data, reduce_repeat = True, LIMITS = None):
     '''
     Construct and return CSP model for IMeal.
     :param user_input_dic: A dictionary that contains all user input information
@@ -46,7 +52,7 @@ def IMeal_Model(user_input_dic, food_data, reduce_repeat = True):
     for i in range(0, num_meals):
         variable_name = 'Meal_'+ str(i)
         # The domain of each varialbe will be the food selection
-        var_domain = create_domain(food_data)
+        var_domain = create_domain(food_data, LIMITS)
         var = MealPlanVariable(variable_name, var_domain)
         csp.add_var(var)
 
@@ -108,7 +114,7 @@ def IMeal_Model(user_input_dic, food_data, reduce_repeat = True):
 
     return csp, csp.get_all_vars()
 
-def create_domain(food_data):
+def create_domain(food_data, limit):
     '''
     create the domain for variables based on the input food data
     :param food_data: The possible food selection
@@ -141,10 +147,14 @@ def create_domain(food_data):
      ....
     ]
     '''
+
     food_list = []
     for name in food_data.keys():
         food = Food(name, food_data[name])
         food_list.append(food)
+
+    if limit is not None:
+        return list(powersetForThree(food_list))
 
     return list(powerset(food_list))
 
