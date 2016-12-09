@@ -46,12 +46,29 @@ def IMeal_Model(user_input_dic, food_data, reduce_repeat = True):
     for i in range(0, num_meals):
         variable_name = 'Meal_'+ str(i)
         # The domain of each varialbe will be the food selection
-        var_domain = create_domain(food_data)
-        var = MealPlanVariable(variable_name, var_domain)
+        # var_domain = create_domain(food_data)
+        var = MealPlanVariable(variable_name, [])
         csp.add_var(var)
 
-    # Protein Constraint
     meals_in_days = split_meals_into_days(csp.get_all_vars())
+
+    breakfast_domain = create_domain_v2(food_data, 0)
+    lunch_domain = create_domain_v2(food_data, 1)
+    dinner_domain = create_domain_v2(food_data, 2)
+
+    domain_l = [breakfast_domain,
+                lunch_domain,
+                dinner_domain]
+
+    for meal_in_day in meals_in_days:
+        time_counter = 0
+        for meal in meal_in_day:
+            meal.reset_domain(domain_l[time_counter])
+            if time_counter == 2:
+                time_counter = 0
+            else:
+                time_counter += 1
+    # Protein Constraint
     if protein is not None:
         day_counter = 1
         for meal_in_day in meals_in_days:
@@ -148,6 +165,59 @@ def create_domain(food_data):
 
     return list(powerset(food_list))
 
+def create_domain_v2(food_data, time_counter):
+    '''
+    create the domain for variables based on the input food data
+    :param food_data: The possible food selection
+    Assume the food_data is in this format
+    {
+        'cheese':
+            {
+                'water': 1,
+                'energy': 1,
+                'protein': 1
+            },
+        'Milk':
+            {
+                'water': 1,
+                'energy': 1,
+                'protein': 1
+            },
+        'Bread':
+            {
+                'water': 1,
+                'energy': 1,
+                'protein': 1
+            }
+    }
+    :return: a power set of input food_data
+    Example
+    [[Food(Cheese)],
+     [Food(Cheese), Food(Milk)],
+     [Food(Milk)],
+     ....
+    ]
+    '''
+
+
+    food_list = []
+    # breakfast
+    if time_counter == 0:
+        data = food_data['Breakfast']
+    elif time_counter == 1:
+        # lunch
+        data = food_data['Lunch']
+    elif time_counter == 2:
+        # dinner
+        data = food_data['Dinner']
+    else:
+        print("Given wrong time")
+
+    for name in data:
+        food = Food(list(name)[0], name[list(name)[0]])
+        food_list.append(food)
+
+    return list(powerset(food_list))
 
 def split_meals_into_days(meals):
     '''
