@@ -33,7 +33,7 @@ def IMeal_Model(user_input_dic, food_data, reduce_repeat = True):
     :param user_input_dic: A dictionary that contains all user input information
     :return: return a CSP Model for IMeal
     '''
-
+    start_time = time.time()
     csp = MealCSP('IMeal_model', reduce_repeat, [])
     num_meals = user_input_dic[DAYS] * NUM_MEALS_PER_DAY
     protein = user_input_dic[PROTEIN]
@@ -123,6 +123,8 @@ def IMeal_Model(user_input_dic, food_data, reduce_repeat = True):
             c.add_satisfying_tuples(all_possible_tuples)
             csp.add_constraint(c)
 
+    end_time = time.time()
+    print("Gerneate CSP Model takes {}".format(end_time - start_time))
     return csp, csp.get_all_vars()
 
 def create_domain(food_data):
