@@ -20,10 +20,12 @@ ASK_BUDGET = "Enter a budget limitation per day: "
 ASK_SPECIAL_REQUEST = "You can select some special request: "
 CHOICE_SPECIAL_REQUESTS = ["Do you want to reduce repeated meals",
                             "Do you want to eat as much as you can"]
+
+MEAL_LIMITS = "3 Raw Materials per meal"
 EAT_AS_MUCH_AS_I_CAN = 2
 REDUCE_REPEATED_MEALS = 1
-
-DATA_FILE = 'food_nutrition_small_v2.csv'
+LIMITS = 3
+DATA_FILE = 'food_nutrition_size9_v2.csv'
 
 def main():
     """
@@ -164,13 +166,20 @@ def start(num_days, energy, protein, sugar, calcium, budget, special_requests):
     ordering_function = val_arbitrary
     if EAT_AS_MUCH_AS_I_CAN in special_requests:
         ordering_function = val_odering_max
+        limit = None
+    else:
+        print(MEAL_LIMITS)
+        limit = LIMITS
     data = csv_to_dict(DATA_FILE)
     orderd_data = collections.OrderedDict(data)
     repeated_request = True if REDUCE_REPEATED_MEALS \
                                in special_requests else False
 
     # food_data = create_food_data()
-    csp_modle, var_array = IMeal_Model(user_input_data, orderd_data, repeated_request)
+    csp_modle, var_array = IMeal_Model(user_input_data,
+                                       orderd_data,
+                                       repeated_request,
+                                       limit)
     solver = MealBT(csp_modle)
     solver.bt_search(prop_BT, ord_mrv,
                      ordering_function)
@@ -212,13 +221,13 @@ def calculate_nutrition(var_array, type):
 
 
 if __name__ == '__main__':
-    main()
+    # main()
     #
-    # days = 10
-    # protein = 300
-    # energy = 3000
-    # sugar = 300
-    # calcium = 2000
-    # budget = 1000
-    # special_requests = [1, 2]
-    # start(days, energy, protein, sugar, calcium, budget, special_requests)
+    days = 10
+    protein = 300
+    energy = 3000
+    sugar = 300
+    calcium = 2000
+    budget = 1000
+    special_requests = [1]
+    start(days, energy, protein, sugar, calcium, budget, special_requests)
