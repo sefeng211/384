@@ -25,7 +25,7 @@ MEAL_LIMITS = "3 Raw Materials per meal"
 EAT_AS_MUCH_AS_I_CAN = 2
 REDUCE_REPEATED_MEALS = 1
 LIMITS = 3
-DATA_FILE = 'food_nutrition_small_v2.csv'
+DATA_FILE = 'food_nutrition_size10_v2.csv'
 
 def main():
     """
