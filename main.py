@@ -20,11 +20,15 @@ ASK_BUDGET = "Enter a budget limitation per day: "
 ASK_SPECIAL_REQUEST = "You can select some special request: "
 CHOICE_SPECIAL_REQUESTS = ["Do you want to reduce repeated meals",
                             "Do you want to eat as much as you can"]
+
+MEAL_LIMITS = "User doesn't set request 2, set 3 Raw Materials per meal"
 EAT_AS_MUCH_AS_I_CAN = 2
 REDUCE_REPEATED_MEALS = 1
-
 # DATA_FILE = 'food_nutrition_small_v2.csv'
 DATA_FILE = 'food_nutrition_big_30_type_v2.csv'
+LIMITS = 3
+
+
 def main():
     """
     The main function
@@ -32,13 +36,7 @@ def main():
     # This function should print the necessary information to the shell
     # and collect information from the user, then invoke functions to output a
     # meal to the user
-    # We need to ask:
-    #   1) Nutrition goals
-    #   2) Number of days to be generated
-    #   3）Nutrition amount per day
-    #   4) Budget
-    #   5) Special Considerations such as "no two idential meals in a day" or
-    # "vegetarian" and etc
+
     print(WELCOME_MESSAGE)
     # Ask days
     while True:
@@ -162,16 +160,25 @@ def start(num_days, energy, protein, sugar, calcium, budget, special_requests):
         SPECIAL_REQUESTS: special_requests
     }
     ordering_function = val_arbitrary
-    if EAT_AS_MUCH_AS_I_CAN in special_requests or REDUCE_REPEATED_MEALS in special_requests:
-        ordering_function = val_odering_max
-    # data = csv_to_dict(DATA_FILE)
     data = csv_to_dict_v2(DATA_FILE)
+    if REDUCE_REPEATED_MEALS in special_requests:
+        ordering_function = val_odering_max
+    if EAT_AS_MUCH_AS_I_CAN in special_requests:
+        ordering_function = val_odering_max
+        limit = None
+    else:
+        print(MEAL_LIMITS)
+        limit = LIMITS
+
     orderd_data = collections.OrderedDict(data)
     repeated_request = True if REDUCE_REPEATED_MEALS \
                                in special_requests else False
 
     # food_data = create_food_data()
-    csp_modle, var_array = IMeal_Model(user_input_data, orderd_data, repeated_request)
+    csp_modle, var_array = IMeal_Model(user_input_data,
+                                       orderd_data,
+                                       repeated_request,
+                                       limit)
     solver = MealBT(csp_modle)
     solver.bt_search(prop_BT, ord_mrv,
                      ordering_function)
@@ -187,10 +194,10 @@ def print_result(var_array):
     splited_into_days = split_meals_into_days(var_array)
     day_counter = 1
     for meals in splited_into_days:
-        print("==============Day {} =============".format(str(day_counter)))
+        print("============== Day {} =============".format(str(day_counter)))
         meal_counter = 1
         for meal in meals:
-            print("Meal {}".format(str(meal_counter)))
+            print("============== Meal {} =============".format(str(meal_counter)))
             for food in meal.get_assigned_value():
                 print(food.get_name())
 
@@ -214,8 +221,7 @@ def calculate_nutrition(var_array, type):
 
 if __name__ == '__main__':
     # main()
-
-    days = 5
+    days = 10
     protein = 300
     energy = 3000
     sugar = 300
