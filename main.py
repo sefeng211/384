@@ -24,8 +24,7 @@ CHOICE_SPECIAL_REQUESTS = ["Do you want to reduce repeated meals",
 MEAL_LIMITS = "User doesn't set request 2, set 3 Raw Materials per meal"
 EAT_AS_MUCH_AS_I_CAN = 2
 REDUCE_REPEATED_MEALS = 1
-# DATA_FILE = 'food_nutrition_small_v2.csv'
-DATA_FILE = 'food_nutrition_big_30_type_v2.csv'
+DATA_FILE = 'food_nutrition_size9_type_v2.csv'
 LIMITS = 3
 
 
@@ -160,7 +159,7 @@ def start(num_days, energy, protein, sugar, calcium, budget, special_requests):
         SPECIAL_REQUESTS: special_requests
     }
     ordering_function = val_arbitrary
-    data = csv_to_dict_v2(DATA_FILE)
+    data = csv_to_dict(DATA_FILE)
     if REDUCE_REPEATED_MEALS in special_requests:
         ordering_function = val_odering_max
     if EAT_AS_MUCH_AS_I_CAN in special_requests:
@@ -211,7 +210,6 @@ def print_result(var_array):
 
 
 def calculate_nutrition(var_array, type):
-
     sum = 0
     for meal in var_array:
         for food in meal.get_assigned_value():
@@ -227,5 +225,5 @@ if __name__ == '__main__':
     sugar = 300
     calcium = 2000
     budget = 1000
-    special_requests = [1]
+    special_requests = []
     start(days, energy, protein, sugar, calcium, budget, special_requests)
