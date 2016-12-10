@@ -158,15 +158,9 @@ def val_lcv(csp, var):
 
 def val_odering_max(csp, var):
     '''
-    val_lcv(csp,var):
     A val_ordering function that takes CSP object csp and Variable object var,
     and returns a list of Values [val1,val2,val3,...]
-    from var's current domain, ordered from best to worst, evaluated according to the
-    Least Constraining Value (LCV) heuristic.
-    (In other words, the list will go from least constraining value in the 0th index,
-    to most constraining value in the $j-1$th index, if the variable has $j$ current domain values.)
-    The best value, according to LCV, is the one that rules out the fewest domain values in other
-    variables that share at least one constraint with var.
+    This function is mainly used to support the two possible requests.
     '''
 
     current_domain = var.cur_domain()

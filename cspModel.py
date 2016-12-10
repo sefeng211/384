@@ -8,23 +8,17 @@ from itertools import chain, combinations
 Construct and return CSP model for IMeal.
 '''
 
+
 '''
 This is taken from
 https://docs.python.org/3/library/itertools.html#recipes
 '''
-def powerset(iterable):
+def powerset(iterable, length):
     "powerset([1,2,3]) --> () (1,) (2,) (3,) (1,2) (1,3) (2,3) (1,2,3)"
     s = list(iterable)
-    return chain.from_iterable(combinations(s, r) for r in range(1, len(s)+1))
-
-# Hard-coded powerset function for only producing powersets with three elements
-def powersetForThree(iterable):
-    "powerset([1,2,3]) --> (1,2,3)"
-    s = list(iterable)
-    return chain.from_iterable([combinations(s, r) for r in range(1, 3)])
+    return chain.from_iterable(combinations(s, r) for r in range(1, length))
 
 NUM_MEALS_PER_DAY = 3
-
 PROTEIN = 'protein'
 SUGAR = 'sugar'
 CALCIUM = 'calcium'
@@ -32,6 +26,7 @@ ENERGY = 'energy'
 BUDGET = 'price'
 DAYS = 'days'
 SPECIAL_REQUESTS = 'special_requests'
+
 
 def IMeal_Model(user_input_dic, food_data, reduce_repeat = True, set_limit = None):
     '''
@@ -127,8 +122,6 @@ def IMeal_Model(user_input_dic, food_data, reduce_repeat = True, set_limit = Non
             all_possible_tuples = find_possible_tuples(BUDGET, budget, meal_in_day)
             c.add_satisfying_tuples(all_possible_tuples)
             csp.add_constraint(c)
-    end_time = time.time()
-
 
     end_time = time.time()
     print("Gerneate CSP Model takes {}".format(end_time - start_time))
@@ -189,9 +182,10 @@ def create_domain_v2(food_data, time_counter, set_limits):
         food_list.append(food)
 
     if set_limits is not None:
-        return list(powersetForThree(food_list))
+        return list(powerset(food_list, set_limits))
 
-    return list(powerset(food_list))
+    return list(powerset(food_list, len(food_list)+1))
+
 
 def split_meals_into_days(meals):
     '''
@@ -219,7 +213,7 @@ def split_meals_into_days(meals):
 
 def find_possible_tuples(type, amount, day_meals, order=True):
     '''
-    Find the possible tuple for protein
+    Find all possibles for a given type
     :return: All possible tuples
     '''
 
@@ -231,11 +225,9 @@ def find_possible_tuples(type, amount, day_meals, order=True):
     # Find all possible sequence
     for l in itertools.product(*varDoms):
         total_amount = 0
-
         for foods in l:
             for food in foods:
                 total_amount += food.get_amount(type)
-
         if total_amount <= amount:
             sat_tuples[total_amount].append(l)
 
@@ -248,5 +240,4 @@ def find_possible_tuples(type, amount, day_meals, order=True):
     for k, value in od.items():
         for v in value:
             ret.append(v)
-
     return ret
