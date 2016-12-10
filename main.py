@@ -218,12 +218,4 @@ def calculate_nutrition(var_array, type):
 
 
 if __name__ == '__main__':
-    # main()
-    days = 10
-    protein = 300
-    energy = 3000
-    sugar = 300
-    calcium = 2000
-    budget = 1000
-    special_requests = []
-    start(days, energy, protein, sugar, calcium, budget, special_requests)
+    main()

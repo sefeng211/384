@@ -50,4 +50,4 @@ def csv_to_dict(in_file):
     return dic
 
 if __name__ == '__main__':
-    csv_to_dict_v2('food_nutrition_small_type_v2.csv')
+    csv_to_dict('food_nutrition_small_type_v2.csv')
