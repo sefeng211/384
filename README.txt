@@ -1,47 +1,62 @@
-# 384 Project
+=================================================
+384 Project
 --By Brent and Sean
+=================================================
 
-# Overview
-IMeal is a command line interface meal genearter. 
+1) Overview
 
-The program will ask some questions to users, and use the answers to generate some meals that meet the user requirments. 
+IMeal is a command line interface meals genearter. 
 
-# SYSTEM REQUIREMENT
-* Python 3
+The program will ask some questions to users, and use the answers to 
+generate some meals that meet the user requirments. 
 
-* At least 4GB of memory
+2) SYSTEM REQUIREMENT
+- Python 3
 
-# Setup Constraint
+- At least 4GB of memory
+
+3) Command Line User Interface
 After start the program, the user should answer the questions that pop up in the shell
 
 There are 7 questions:
-* Enter number of days you want to generated:
- * Users have to provide an integer
-* Enter how much energy/calories do you want to have per day: 
- * Users can answer it with an integer or leave it empty, empty response will be treated as no requirements.
-* Enter how much protein do you want to have per day: 
- * Users can answer it with an integer or leave it empty, empty response will be treated as no requirements.
-* Enter how much sugar do you want to have per day:
- * Users can answer it with an integer or leave it empty, empty response will be treated as no requirements.
-* Enter how much calcium do you want to have per day: 
- * Users can answer it with an integer or leave it empty, empty response will be treated as no requirements.
-* Enter a budget limitation per day: 
- * User can answer it with an integer or leave it empty, empty response will be treated as no requirements.
-* Special requests
- * There are two special requests that the user can choose. 
-  * reduce repeated meals
-    * If the user chooses this request, the program will try to avoid providing repeated meals to the user.
-  * eat as much as you can
-    * With this request, the program will try to provides the meals that meet the requirements as mush as it can. Without this request, the program will generate meals arbitrary. 
+1. Enter number of days you want to generated:
+--- Users have to provide an integer
+
+2. Enter how much energy/calories do you want to have per day: 
+--- Users can answer it with an integer or leave it empty, empty response will be treated as no requirements.
+
+3. Enter how much protein do you want to have per day: 
+--- Users can answer it with an integer or leave it empty, empty response will be treated as no requirements.
+
+4. Enter how much sugar do you want to have per day:
+--- Users can answer it with an integer or leave it empty, empty response will be treated as no requirements.
+
+5. Enter how much calcium do you want to have per day: 
+--- Users can answer it with an integer or leave it empty, empty response will be treated as no requirements.
+
+6. Enter a budget limitation per day: 
+--- User can answer it with an integer or leave it empty, empty response will be treated as no requirements.
+
+7. Special requests
+   1) There are two special requests that the user can choose. 
+	---- reduce repeated meals
+    2) If the user chooses this request, the program will try to avoid providing repeated meals to the user.
+    ---- eat as much as you can
+    With this request, the program will try to provides the meals that meet the requirements as mush as it can. Without this request, the program will generate meals arbitrary. 
     
 The program will generate constraints based on the user requirments.
 
 
-# Usage
-```
-python3 main.py
-if answer to the question "Do you want to eat as much as you can" is "yes", use food_nutrition_small_13.csv
+4) Usage
+command: python3 main.py
+
+Please Note that if answer to the question "Do you want to eat as much as you can" is "yes", use food_nutrition_small_13.csv
 Otherwise can use food_nutrition_small_13.csv or food_nutrition_big_28.csv
+
+In order to change the database file, please edit the constant string DATA_FILE in main.py.
+It sets to 'food_nutrition_small_13.csv' by default.
+
+
 ```
 ## Example Usage and Output
 ```
