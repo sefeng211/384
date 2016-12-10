@@ -21,10 +21,11 @@ ASK_SPECIAL_REQUEST = "You can select some special request: "
 CHOICE_SPECIAL_REQUESTS = ["Do you want to reduce repeated meals",
                             "Do you want to eat as much as you can"]
 
-MEAL_LIMITS = "User doesn't set request 2, set 3 Raw Materials per meal"
+MEAL_LIMITS = "User doesn't set request 2, limit a max of " \
+              "3 raw materials per meal"
 EAT_AS_MUCH_AS_I_CAN = 2
 REDUCE_REPEATED_MEALS = 1
-DATA_FILE = 'food_nutrition_size9_type_v2.csv'
+DATA_FILE = 'food_nutrition_small_13.csv'
 LIMITS = 3
 
 
