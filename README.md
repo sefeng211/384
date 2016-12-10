@@ -1,5 +1,5 @@
-# 384
---Project for Brent and Sean
+# 384 Project
+--By Brent and Sean
 
 # Overview
 IMeal is a command line interface meal genearter. 
