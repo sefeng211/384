@@ -40,6 +40,8 @@ The program will generate constraints based on the user requirments.
 # Usage
 ```
 python3 main.py
+if answer to the question "Do you want to eat as much as you can" is "yes", use food_nutrition_small_13.csv
+Otherwise can use food_nutrition_13.csv or food_nutrition_28.csv
 ```
 ## Example Usage and Output
 ```
