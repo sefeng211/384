@@ -24,7 +24,7 @@ EAT_AS_MUCH_AS_I_CAN = 2
 REDUCE_REPEATED_MEALS = 1
 
 # DATA_FILE = 'food_nutrition_small_v2.csv'
-DATA_FILE = 'food_nutrition_small_type_v2.csv'
+DATA_FILE = 'food_nutrition_size10_type_v2.csv'
 def main():
     """
     The main function
@@ -162,7 +162,7 @@ def start(num_days, energy, protein, sugar, calcium, budget, special_requests):
         SPECIAL_REQUESTS: special_requests
     }
     ordering_function = val_arbitrary
-    if EAT_AS_MUCH_AS_I_CAN in special_requests:
+    if EAT_AS_MUCH_AS_I_CAN in special_requests or REDUCE_REPEATED_MEALS in special_requests:
         ordering_function = val_odering_max
     # data = csv_to_dict(DATA_FILE)
     data = csv_to_dict_v2(DATA_FILE)
@@ -221,5 +221,5 @@ if __name__ == '__main__':
     sugar = 300
     calcium = 2000
     budget = 1000
-    special_requests = [2]
+    special_requests = [1]
     start(days, energy, protein, sugar, calcium, budget, special_requests)
