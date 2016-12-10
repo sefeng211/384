@@ -7,7 +7,12 @@ class MealPlanVariable(Variable):
     This is the variable class for meal plan, it inherits the Variable class
      from A2.
     '''
-    pass
+
+    def reset_domain(self, domain=[]):
+        self.dom = list(domain)  # Make a copy of passed domain
+        self.curdom = [True] * len(domain)  # using list
+        # for bt_search
+        self.assignedValue = None
 
 
 class MealCSP(CSP):

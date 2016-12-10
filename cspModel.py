@@ -17,11 +17,11 @@ def powerset(iterable):
     s = list(iterable)
     return chain.from_iterable(combinations(s, r) for r in range(1, len(s)+1))
 
-
+# Hard-coded powerset function for only producing powersets with three elements
 def powersetForThree(iterable):
     "powerset([1,2,3]) --> (1,2,3)"
     s = list(iterable)
-    return chain.from_iterable([combinations(s, 3)])
+    return chain.from_iterable([combinations(s, r) for r in range(1, 3)])
 
 NUM_MEALS_PER_DAY = 3
 
@@ -33,7 +33,7 @@ BUDGET = 'price'
 DAYS = 'days'
 SPECIAL_REQUESTS = 'special_requests'
 
-def IMeal_Model(user_input_dic, food_data, reduce_repeat = True, LIMITS = None):
+def IMeal_Model(user_input_dic, food_data, reduce_repeat = True, set_limit = None):
     '''
     Construct and return CSP model for IMeal.
     :param user_input_dic: A dictionary that contains all user input information
@@ -51,13 +51,29 @@ def IMeal_Model(user_input_dic, food_data, reduce_repeat = True, LIMITS = None):
     # Each meal plan will be a variable
     for i in range(0, num_meals):
         variable_name = 'Meal_'+ str(i)
-        # The domain of each varialbe will be the food selection
-        var_domain = create_domain(food_data, LIMITS)
-        var = MealPlanVariable(variable_name, var_domain)
+        var = MealPlanVariable(variable_name, [])
         csp.add_var(var)
 
-    # Protein Constraint
     meals_in_days = split_meals_into_days(csp.get_all_vars())
+
+    breakfast_domain = create_domain_v2(food_data, 0, set_limit)
+    lunch_domain = create_domain_v2(food_data, 1, set_limit)
+    dinner_domain = create_domain_v2(food_data, 2, set_limit)
+
+    domain_l = [breakfast_domain,
+                lunch_domain,
+                dinner_domain]
+
+    for meal_in_day in meals_in_days:
+        time_counter = 0
+        for meal in meal_in_day:
+            meal.reset_domain(domain_l[time_counter])
+            if time_counter == 2:
+                time_counter = 0
+            else:
+                time_counter += 1
+
+    # Protein Constraint
     if protein is not None:
         day_counter = 1
         for meal_in_day in meals_in_days:
@@ -113,10 +129,14 @@ def IMeal_Model(user_input_dic, food_data, reduce_repeat = True, LIMITS = None):
             csp.add_constraint(c)
     end_time = time.time()
 
-    print("Generating CSP Model takes {}".format(end_time - start_time))
+
+    end_time = time.time()
+    print("Gerneate CSP Model takes {}".format(end_time - start_time))
+
     return csp, csp.get_all_vars()
 
-def create_domain(food_data, limit):
+
+def create_domain_v2(food_data, time_counter, set_limits):
     '''
     create the domain for variables based on the input food data
     :param food_data: The possible food selection
@@ -150,16 +170,28 @@ def create_domain(food_data, limit):
     ]
     '''
 
+
     food_list = []
-    for name in food_data.keys():
-        food = Food(name, food_data[name])
+    # breakfast
+    if time_counter == 0:
+        data = food_data['Breakfast']
+    elif time_counter == 1:
+        # lunch
+        data = food_data['Lunch']
+    elif time_counter == 2:
+        # dinner
+        data = food_data['Dinner']
+    else:
+        print("Given wrong time")
+
+    for name in data:
+        food = Food(list(name)[0], name[list(name)[0]])
         food_list.append(food)
 
-    if limit is not None:
+    if set_limits is not None:
         return list(powersetForThree(food_list))
 
     return list(powerset(food_list))
-
 
 def split_meals_into_days(meals):
     '''
